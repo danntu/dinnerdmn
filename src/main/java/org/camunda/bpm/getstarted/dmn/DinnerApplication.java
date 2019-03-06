@@ -9,6 +9,8 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 
+import java.util.List;
+
 @ProcessApplication("Dinner App DMN")
 public class DinnerApplication extends ServletProcessApplication {
     @PostDeploy
@@ -16,9 +18,14 @@ public class DinnerApplication extends ServletProcessApplication {
         DecisionService decisionService = processEngine.getDecisionService();
         VariableMap variableMap = Variables.createVariables()
                 .putValue("season","Spring")
-                .putValue("guestCount", 10);
+                .putValue("guestCount", 10)
+                .putValue("guestsWithChildren", true);
         DmnDecisionTableResult dmnDecisionRuleResults = decisionService.evaluateDecisionTableByKey("dish",variableMap);
         String desriedDish = dmnDecisionRuleResults.getSingleEntry();
         System.out.println("Desired dish "+ desriedDish);
+
+        DmnDecisionTableResult dmnBeveragesResults = decisionService.evaluateDecisionTableByKey("beverages",variableMap);
+        List<Object> beverages = dmnBeveragesResults.collectEntries("beverages");
+        System.out.println("Desired beverages: " + beverages);
     }
 }
